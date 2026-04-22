@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="gu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JAYADITYA OS - PRO VACCINE SYSTEM</title>
+    <style>
+        body { background: #0f172a; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; color: white; margin: 0; padding: 10px; }
+        .card { max-width: 950px; margin: auto; background: #1e293b; padding: 20px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); border: 1px solid #334155; }
+        .header { text-align: center; color: #38bdf8; margin-bottom: 20px; border-bottom: 2px solid #334155; padding-bottom: 10px; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; background: #334155; padding: 15px; border-radius: 10px; margin-bottom: 20px; }
+        label { font-size: 12px; color: #94a3b8; font-weight: bold; display: block; margin-bottom: 5px; }
+        input, select { background: #1e293b; color: white; border: 1px solid #475569; padding: 10px; border-radius: 8px; width: 100%; box-sizing: border-box; font-size: 14px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; background: white; color: #1e293b; border-radius: 10px; overflow: hidden; }
+        th, td { border: 1px solid #cbd5e1; padding: 8px; text-align: center; font-size: 13px; }
+        th { background: #38bdf8; color: #0f172a; font-weight: bold; }
+        .btn { width: 100%; padding: 18px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; color: white; background: linear-gradient(45deg, #0ea5e9, #2563eb); font-size: 18px; margin-top: 20px; transition: 0.3s; box-shadow: 0 4px 15px rgba(14, 165, 233, 0.4); }
+        .btn:active { transform: scale(0.98); }
+        .footer { text-align: center; margin-top: 20px; font-size: 14px; color: #94a3b8; font-weight: bold; }
+        @media print { .no-print { display: none; } }
+    </style>
+</head>
+<body>
+    <div class="card no-print">
+        <div class="header">
+            <h1 style="margin:0; font-size: 24px;">J-AIRWAYS VACCINE OS</h1>
+            <p style="margin:5px 0 0 0; font-size: 12px; letter-spacing: 2px;">GOVERNMENT SUPPLY MANAGEMENT</p>
+        </div>
+        
+        <div class="grid">
+            <div><label>FROM CENTER</label><input type="text" id="f" value="PHC DHAVA" readonly></div>
+            <div><label>TO VILLAGE</label>
+                <select id="t">
+                    <option>DHAVA</option><option>LUSHALA</option><option>MAALJINJVA</option>
+                    <option>GABHA</option><option>SEMARVAV</option><option>UMRETHI</option>
+                    <option>DHANEJ</option><option>MPRUKA</option><option>JASHAPUR</option>
+                </select>
+            </div>
+            <div><label>SUPPLY DATE</label><input type="date" id="d"></div>
+            <div><label>VOUCHER NO</label><input type="text" id="v" placeholder="REF/2026/01"></div>
+        </div>
+
+        <table id="mainTbl">
+            <tr>
+                <th style="width:40px">Sr</th>
+                <th>Item Description</th>
+                <th style="width:80px">Qty</th>
+                <th>Batch No</th>
+                <th>Expiry</th>
+            </tr>
+        </table>
+
+        <button class="btn" onclick="generateReport()">DOWNLOAD A4 DUAL VOUCHER 📥</button>
+        <div class="footer">Developed by Jayaditya (Vidhyarthi)</div>
+    </div>
+
+    <script>
+        const vaxData = [
+            ["1","BCG (Doses)","10","0374MA087","01/27"], ["2","BCG Diluents","10","0703S1017","8/27"],
+            ["3","DPT (Doses)","10","2825X018B","11/27"], ["4","DPT (Vial)","2","2825X018B","11/27"],
+            ["5","Pentavalent (Doses)","10","256PRN060","11/27"], ["6","Pentavalent (Vial)","2","256PRN03B","4/27"],
+            ["7","M.R. (Doses)","5","0115M045","01/28"], ["8","M.R. Diluents","5","0675S4009","6/27"],
+            ["9","R.V.V. (Doses)","6","3955M106B","11/27"], ["10","PCV (Doses)","5","PCV9982","12/27"],
+            ["11","bOPV (Doses)","20","OPV7721","09/27"], ["12","fIPV (Vial)","1","FIPV4432","08/27"],
+            ["13","Hepatitis-B","5","HEP2210","05/27"], ["14","Vitamin-A","10","VIT8821","03/27"]
+        ];
+
+        const tbl = document.getElementById('mainTbl');
+        vaxData.forEach(item => {
+            let row = tbl.insertRow();
+            row.innerHTML = `
+                <td>${item[0]}</td>
+                <td style="text-align:left; font-weight:bold;">${item[1]}</td>
+                <td><input type="number" inputmode="numeric" class="iq" value="${item[2]}"></td>
+                <td><input type="text" class="ib" value="${item[3]}"></td>
+                <td><input type="text" class="ie" value="${item[4]}"></td>
+            `;
+        });
+
+        function generateReport() {
+            let rows = "";
+            let qs = document.querySelectorAll('.iq'), bs = document.querySelectorAll('.ib'), es = document.querySelectorAll('.ie');
+            
+            vaxData.forEach((item, i) => {
+                if(qs[i].value > 0 || qs[i].value != "") {
+                    rows += `<tr><td>${item[0]}</td><td style="text-align:left">${item[1]}</td><td>${qs[i].value}</td><td>${bs[i].value}</td><td>${es[i].value}</td><td>Usable</td></tr>`;
+                }
+            });
+
+            const createVoucher = (type) => `
+                <div style="border: 2px solid black; padding: 15px; height: 140mm; position: relative; box-sizing: border-box; margin-bottom: 5mm; background: white;">
+                    <div style="position: absolute; top: 15; right: 20; border: 3px solid red; color: red; padding: 5px 15px; font-weight: bold; transform: rotate(5deg); font-size: 20px;">${type}</div>
+                    <h2 style="text-align: center; text-decoration: underline; margin-top: 0;">VACCINE SUPPLY VOUCHER</h2>
+                    <table style="width: 100%; border: none; margin-bottom: 10px; font-size: 14px;">
+                        <tr><td><b>FROM:</b> ${document.getElementById('f').value}</td><td><b>TO:</b> ${document.getElementById('t').value}</td></tr>
+                        <tr><td><b>DATE:</b> ${document.getElementById('d').value}</td><td><b>REF NO:</b> ${document.getElementById('v').value}</td></tr>
+                    </table>
+                    <table style="width: 100%; border-collapse: collapse; font-size: 11px;">
+                        <tr style="background: #f2f2f2;"><th>Sr</th><th>Item Description</th><th>Qty</th><th>Batch</th><th>Exp</th><th>Status</th></tr>
+                        ${rows}
+                    </table>
+                    <div style="margin-top: 30px; display: flex; justify-content: space-between;">
+                        <p>Receiver's Sign: _________________</p>
+                        <p>Issuer's Sign: _________________</p>
+                    </div>
+                </div>`;
+
+            let win = window.open('', '_blank');
+            win.document.write(`
+                <html>
+                <head><style>table, th, td { border: 1px solid black; text-align: center; padding: 5px; } @media print { @page { size: A4; margin: 5mm; } }</style></head>
+                <body onload="window.print(); window.close();">
+                    ${createVoucher('ORIGINAL')}
+                    <div style="border-top: 1px dashed gray; margin: 5px 0;"></div>
+                    ${createVoucher('DUPLICATE')}
+                </body>
+                </html>
+            `);
+            win.document.close();
+        }
+    </script>
+</body>
+      </html>
+      
